@@ -32,6 +32,12 @@ THE SOFTWARE.
 #include "to_string.h"
 
 #ifdef _MSC_VER
+#define DLLEXPORT __declspec(dllexport)
+#else
+#define DLLEXPORT
+#endif
+
+#ifdef _MSC_VER
 #define __typeof__(x) std::remove_reference<decltype(x)>::type
 #endif
 
@@ -158,12 +164,13 @@ bool readDword(bounded_buffer *b, std::uint32_t offset, std::uint32_t &out);
 bool readQword(bounded_buffer *b, std::uint32_t offset, std::uint64_t &out);
 bool readChar16(bounded_buffer *b, std::uint32_t offset, char16_t &out);
 
-bounded_buffer *readFileToFileBuffer(const char *filePath);
-bounded_buffer *makeBufferFromPointer(std::uint8_t *data, std::uint32_t sz);
-bounded_buffer *
+DLLEXPORT bounded_buffer *readFileToFileBuffer(const char *filePath);
+DLLEXPORT bounded_buffer *makeBufferFromPointer(std::uint8_t *data,
+                                                std::uint32_t sz);
+DLLEXPORT bounded_buffer *
 splitBuffer(bounded_buffer *b, std::uint32_t from, std::uint32_t to);
-void deleteBuffer(bounded_buffer *b);
-uint64_t bufLen(bounded_buffer *b);
+DLLEXPORT void deleteBuffer(bounded_buffer *b);
+DLLEXPORT uint64_t bufLen(bounded_buffer *b);
 
 struct parsed_pe_internal;
 
@@ -182,49 +189,49 @@ typedef struct _parsed_pe {
 // Resolve a Rich header product id / build number pair to a known
 // product name
 typedef std::pair<std::uint16_t, std::uint16_t> ProductKey;
-const std::string &GetRichObjectType(std::uint16_t prodId);
-const std::string &GetRichProductName(std::uint16_t buildNum);
+DLLEXPORT const std::string &GetRichObjectType(std::uint16_t prodId);
+DLLEXPORT const std::string &GetRichProductName(std::uint16_t buildNum);
 
 // get parser error status as integer
-std::uint32_t GetPEErr();
+DLLEXPORT std::uint32_t GetPEErr();
 
 // get parser error status as string
-std::string GetPEErrString();
+DLLEXPORT std::string GetPEErrString();
 
 // get parser error location as string
-std::string GetPEErrLoc();
+DLLEXPORT std::string GetPEErrLoc();
 
 // get a PE parse context from a file
-parsed_pe *ParsePEFromFile(const char *filePath);
+DLLEXPORT parsed_pe *ParsePEFromFile(const char *filePath);
 
-parsed_pe *ParsePEFromPointer(std::uint8_t *buffer, std::uint32_t sz);
-parsed_pe *ParsePEFromBuffer(bounded_buffer *buffer);
+DLLEXPORT parsed_pe *ParsePEFromPointer(std::uint8_t *buffer, std::uint32_t sz);
+DLLEXPORT parsed_pe *ParsePEFromBuffer(bounded_buffer *buffer);
 
 // destruct a PE context
-void DestructParsedPE(parsed_pe *p);
+DLLEXPORT void DestructParsedPE(parsed_pe *p);
 
 // iterate over Rich header entries
 typedef int (*iterRich)(void *, const rich_entry &);
-void IterRich(parsed_pe *pe, iterRich cb, void *cbd);
+DLLEXPORT void IterRich(parsed_pe *pe, iterRich cb, void *cbd);
 
 // iterate over the resources
 typedef int (*iterRsrc)(void *, const resource &);
-void IterRsrc(parsed_pe *pe, iterRsrc cb, void *cbd);
+DLLEXPORT void IterRsrc(parsed_pe *pe, iterRsrc cb, void *cbd);
 
 // iterate over the imports by RVA and string
 typedef int (*iterVAStr)(void *,
                          const VA &,
                          const std::string &,
                          const std::string &);
-void IterImpVAString(parsed_pe *pe, iterVAStr cb, void *cbd);
+DLLEXPORT void IterImpVAString(parsed_pe *pe, iterVAStr cb, void *cbd);
 
 // iterate over relocations in the PE file
 typedef int (*iterReloc)(void *, const VA &, const reloc_type &);
-void IterRelocs(parsed_pe *pe, iterReloc cb, void *cbd);
+DLLEXPORT void IterRelocs(parsed_pe *pe, iterReloc cb, void *cbd);
 
 // iterate over debug directories in the PE file
 typedef int (*iterDebug)(void *, const std::uint32_t &, const bounded_buffer *);
-void IterDebugs(parsed_pe *pe, iterDebug cb, void *cbd);
+DLLEXPORT void IterDebugs(parsed_pe *pe, iterDebug cb, void *cbd);
 
 // Iterate over symbols (symbol table) in the PE file
 typedef int (*iterSymbol)(void *,
@@ -234,14 +241,14 @@ typedef int (*iterSymbol)(void *,
                           const std::uint16_t &,
                           const std::uint8_t &,
                           const std::uint8_t &);
-void IterSymbols(parsed_pe *pe, iterSymbol cb, void *cbd);
+DLLEXPORT void IterSymbols(parsed_pe *pe, iterSymbol cb, void *cbd);
 
 // iterate over the exports, except forwarded exports
 typedef int (*iterExp)(void *,
                        const VA &,
                        const std::string &,
                        const std::string &);
-void IterExpVA(parsed_pe *pe, iterExp cb, void *cbd);
+DLLEXPORT void IterExpVA(parsed_pe *pe, iterExp cb, void *cbd);
 
 // iterate over the exports, including forwarded exports
 // export ordinal is also provided as the third argument.
@@ -253,7 +260,7 @@ typedef int (*iterExpFull)(void *,
                            const std::string &,
                            const std::string &,
                            const std::string &);
-void IterExpFull(parsed_pe *pe, iterExpFull cb, void *cbd);
+DLLEXPORT void IterExpFull(parsed_pe *pe, iterExpFull cb, void *cbd);
 
 // iterate over sections
 typedef int (*iterSec)(void *,
@@ -261,22 +268,22 @@ typedef int (*iterSec)(void *,
                        const std::string &,
                        const image_section_header &,
                        const bounded_buffer *);
-void IterSec(parsed_pe *pe, iterSec cb, void *cbd);
+DLLEXPORT void IterSec(parsed_pe *pe, iterSec cb, void *cbd);
 
 // get byte at VA in PE
-bool ReadByteAtVA(parsed_pe *pe, VA v, std::uint8_t &b);
+DLLEXPORT bool ReadByteAtVA(parsed_pe *pe, VA v, std::uint8_t &b);
 
 // get entry point into PE
-bool GetEntryPoint(parsed_pe *pe, VA &v);
+DLLEXPORT bool GetEntryPoint(parsed_pe *pe, VA &v);
 
 // get machine as human readable string
-const char *GetMachineAsString(parsed_pe *pe);
+DLLEXPORT const char *GetMachineAsString(parsed_pe *pe);
 
 // get subsystem as human readable string
-const char *GetSubsystemAsString(parsed_pe *pe);
+DLLEXPORT const char *GetSubsystemAsString(parsed_pe *pe);
 
 // get a table or string by its data directory entry
-bool GetDataDirectoryEntry(parsed_pe *pe,
-                           data_directory_kind dirnum,
-                           std::vector<std::uint8_t> &raw_entry);
+DLLEXPORT bool GetDataDirectoryEntry(parsed_pe *pe,
+                                     data_directory_kind dirnum,
+                                     std::vector<std::uint8_t> &raw_entry);
 } // namespace peparse
