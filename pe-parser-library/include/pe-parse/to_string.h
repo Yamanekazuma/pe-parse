@@ -3,7 +3,7 @@
 #include <sstream>
 #include <string>
 
-#if defined(_MSC_VER)
+#if defined(__GNUC__)
 typedef std::basic_string<wchar_t> UCharString;
 #else
 typedef std::u16string UCharString;

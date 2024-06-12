@@ -17,7 +17,7 @@ if (MSVC)
   endif ()
 
 else ()
-  if (NOT MINGW)
+  if (NOT WIN32)
     list(APPEND DEFAULT_CXX_FLAGS -fPIC)
   endif ()
 
