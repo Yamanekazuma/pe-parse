@@ -18,7 +18,7 @@ list(APPEND PEPARSERLIB_SOURCEFILES
 # in C++17 and onwards, but will probably be available for quite some time.
 # Previous versions of pe-parse used ICU when available, but this caused
 # DLL hell on Windows and wasn't worth the additional dependency.
-if(MSVC)
+if(WIN32)
   list(APPEND PEPARSERLIB_SOURCEFILES src/unicode_winapi.cpp)
 else()
   list(APPEND PEPARSERLIB_SOURCEFILES src/unicode_codecvt.cpp)

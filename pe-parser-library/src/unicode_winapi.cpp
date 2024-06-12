@@ -28,14 +28,15 @@ THE SOFTWARE.
 namespace peparse {
 std::string from_utf16(const UCharString &u) {
   std::string result;
-  std::size_t size = WideCharToMultiByte(CP_UTF8,
-                                         0,
-                                         u.data(),
-                                         static_cast<int>(u.size()),
-                                         nullptr,
-                                         0,
-                                         nullptr,
-                                         nullptr);
+  std::size_t size = static_cast<std::size_t>(
+      WideCharToMultiByte(CP_UTF8,
+                          0,
+                          reinterpret_cast<const wchar_t *>(u.data()),
+                          static_cast<int>(u.size()),
+                          nullptr,
+                          0,
+                          nullptr,
+                          nullptr));
 
   if (size <= 0) {
     return result;
@@ -44,7 +45,7 @@ std::string from_utf16(const UCharString &u) {
   result.reserve(size);
   WideCharToMultiByte(CP_UTF8,
                       0,
-                      u.data(),
+                      reinterpret_cast<const wchar_t *>(u.data()),
                       static_cast<int>(u.size()),
                       &result[0],
                       static_cast<int>(result.capacity()),
